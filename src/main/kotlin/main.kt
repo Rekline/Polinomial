@@ -1,11 +1,10 @@
 import gui.MainWindow
-import math.polinomial.Lagrange
-import math.polinomial.Newton
-import kotlin.random.Random
+
 
 fun main() {
     MainWindow().isVisible = true
-
+    val sz = 1000
+    println(sz)
 }
 // Генерация массивов случайных чисел
 //    val sz = 1000
