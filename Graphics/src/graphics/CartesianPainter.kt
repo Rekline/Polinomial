@@ -20,23 +20,25 @@ class CartesianPainter(xMin: Double,
         get() = field
         set(value) {field = max(1,value)}
 
-
-
     private var xMin = 0.0
     private var xMax = 0.0
     private var yMin = 0.0
     private var yMax = 0.0
 
-    private val converter: Converter
+    public var converter: Converter = Converter(0.0,0.0,0.0,0.0,0,0)
+        get() = field
+        set(value) {
+            field = value
+            this.height = value.height
+            this.width = value.width
+            this.xMin = value.xEdges.first
+            this.xMax = value.xEdges.second
+            this.yMin = value.yEdges.first
+            this.yMax = value.yEdges.second
+        }
 
     init {
         this.converter = converter
-        this.height = height
-        this.width = width
-        this.xMin = xMin
-        this.xMax = xMax
-        this.yMin = yMin
-        this.yMax = yMax
     }
 
     private fun paintAxes(g:Graphics){
@@ -97,7 +99,7 @@ class CartesianPainter(xMin: Double,
                 d = 20
             else
                 d=-10
-            g.drawString((-i/10.0).toString(),x-8,y0+d)
+            g.drawString((i/10.0).toString(),x-8,y0+d)
         }
         for (i in  (yMin*10).toInt()..(yMax*10).toInt()) {
             if (i % 5!=0) continue;

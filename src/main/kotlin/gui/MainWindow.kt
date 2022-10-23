@@ -121,7 +121,7 @@ class MainWindow : JFrame() {
             jsYMin.value as Double,
             jsYMax.value as Double,
             mainPanel.width, mainPanel.height)
-        var cartPainter = CartesianPainter(jsXMin.value as Double,
+        val cartPainter = CartesianPainter(jsXMin.value as Double,
             jsXMax.value as Double,
             jsYMin.value as Double,
             jsYMax.value as Double,
@@ -131,15 +131,36 @@ class MainWindow : JFrame() {
             override fun componentResized(e: ComponentEvent?) {
                 converter.width = mainPanel.width
                 converter.height = mainPanel.height
-                cartPainter.height = mainPanel.height
-                cartPainter.width = mainPanel.width
-                repaint()
+                cartPainter.converter = converter
+                mainPanel.paint(mainPanel.graphics)
             }
         })
 
-//        nmXMax.addChangeListener { _ -> nmXMax.maximum = nmXMax.value as Double - nmXMax.stepSize.toDouble()*2.0
-//            converter
-//        }
+        nmXMax.addChangeListener { _ ->
+            nmXMin.maximum = nmXMax.value as Double - nmXMin.stepSize.toDouble()*2.0
+            converter.xEdges = Pair(nmXMin.value as Double, nmXMax.value as Double)
+            cartPainter.converter = converter
+            mainPanel.paint(mainPanel.graphics)
+        }
+        nmXMin.addChangeListener { _ ->
+            nmXMax.minimum = nmXMin.value as Double + nmXMax.stepSize.toDouble()*2.0
+            converter.xEdges = Pair(nmXMin.value as Double, nmXMax.value as Double)
+            cartPainter.converter = converter
+            mainPanel.paint(mainPanel.graphics)
+        }
+
+        nmYMax.addChangeListener { _ ->
+            nmYMin.maximum = nmYMax.value as Double - nmYMin.stepSize.toDouble()*2.0
+            converter.yEdges = Pair(nmYMin.value as Double, nmYMax.value as Double)
+            cartPainter.converter = converter
+            mainPanel.paint(mainPanel.graphics)
+        }
+        nmYMin.addChangeListener { _ ->
+            nmYMax.minimum = nmYMin.value as Double + nmYMax.stepSize.toDouble()*2.0
+            converter.yEdges = Pair(nmYMin.value as Double, nmYMax.value as Double)
+            cartPainter.converter = converter
+            mainPanel.paint(mainPanel.graphics)
+        }
         mainPanel.painters.add(cartPainter)
     }
 

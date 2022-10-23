@@ -3,8 +3,6 @@ import gui.MainWindow
 
 fun main() {
     MainWindow().isVisible = true
-    val sz = 1000
-    println(sz)
 }
 // Генерация массивов случайных чисел
 //    val sz = 1000
