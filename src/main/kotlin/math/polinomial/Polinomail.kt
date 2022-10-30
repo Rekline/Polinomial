@@ -25,10 +25,6 @@ open class Polynomial(vararg coeffs: Double) {
     }
     constructor(): this(0.0)
 
-    // уже не нужно
-    fun getValueInPoint(x: Double) : Double =
-        DoubleArray(order + 1, init = {i -> x.pow(i) * _coeff[i]}).sum()
-
     override fun toString(): String {
         val sb = StringBuilder()
         if (this.order == 0 && coeff[0] eq 0.0 )

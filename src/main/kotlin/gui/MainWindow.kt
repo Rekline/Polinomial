@@ -3,6 +3,7 @@ package gui
 import graphics.CartesianPainter
 import graphics.Converter
 import graphics.GraphicsPanel
+import math.polinomial.Newton
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -10,7 +11,6 @@ import java.awt.event.ComponentEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
-import javax.swing.event.ChangeListener
 
 class MainWindow : JFrame() {
     val jsXMin: JSpinner
@@ -29,6 +29,7 @@ class MainWindow : JFrame() {
     val mainPanel: GraphicsPanel
     val minSz = Dimension(600, 450)
     val converter: Converter
+    val newtonPol: Newton
 
     init{
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -161,6 +162,18 @@ class MainWindow : JFrame() {
             cartPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
+
+        newtonPol = Newton()
+
+        mainPanel.addMouseListener(
+            object : MouseAdapter(){
+                override fun mousePressed(e: MouseEvent) {
+                    newtonPol.addNode(converter.xScrToCrt(e.x), converter.yScrToCrt(e.y))
+                    mainPanel.repaint()
+                }
+            }
+        )
+
         mainPanel.painters.add(cartPainter)
     }
 

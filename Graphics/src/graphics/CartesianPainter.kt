@@ -10,7 +10,8 @@ class CartesianPainter(xMin: Double,
                        yMax: Double,
                        width: Int,
                        height: Int,
-                        converter: Converter) : Painter {
+                        converter: Converter
+) : Painter {
 
     override var height: Int = 1
         get() = field
@@ -54,7 +55,7 @@ class CartesianPainter(xMin: Double,
         val y0 = converter.yCrtToScr(0.0)
         for( i in (xMin*10).toInt()..(xMax*10).toInt())
         {
-            g.color = Color.magenta
+            g.color = Color.BLUE
             var div = 2;
             if ((i % 5)!=0) {
                 div += 1;
@@ -62,13 +63,13 @@ class CartesianPainter(xMin: Double,
             }
             if ((i % 10)!=0) {
                 div += 1;
-                g.color=Color.DARK_GRAY
+                g.color=Color.BLACK
             }
             val x=converter.xCrtToScr(i/10.0)
             g.drawLine(x, y0 - div, x, y0 + div);
         }
         for (i in (yMin*10).toInt()..(yMax*10).toInt()){
-            g.color= Color.magenta
+            g.color= Color.BLUE
             var div = 2;
             if ((i % 5)!=0) {
                 div += 1;
@@ -76,7 +77,7 @@ class CartesianPainter(xMin: Double,
             }
             if ((i % 10)!=0) {
                 div += 1;
-                g.color=Color.DARK_GRAY
+                g.color=Color.BLACK
             }
             val y = converter.yCrtToScr(i / 10.0)
             g.drawLine( x0-div, y, x0+div, y);
@@ -99,7 +100,7 @@ class CartesianPainter(xMin: Double,
                 d = 20
             else
                 d=-10
-            g.drawString((i/10.0).toString(),x-8,y0+d)
+            g.drawString((i/10.0).toString(),x-10,y0+d)
         }
         for (i in  (yMin*10).toInt()..(yMax*10).toInt()) {
             if (i % 5!=0) continue;
@@ -118,7 +119,7 @@ class CartesianPainter(xMin: Double,
         if (g != null) {
             paintAxes(g)
             paintMarkup(g)
-            paintLabel(g)
+            //paintLabel(g)
         }
     }
 }
