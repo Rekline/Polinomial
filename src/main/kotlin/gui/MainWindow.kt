@@ -3,7 +3,9 @@ package gui
 import graphics.CartesianPainter
 import graphics.Converter
 import graphics.GraphicsPanel
+import graphics.PolinomialPainter
 import math.polinomial.Newton
+import java.awt.Button
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -11,6 +13,7 @@ import java.awt.event.ComponentEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
+import kotlin.math.abs
 
 class MainWindow : JFrame() {
     val jsXMin: JSpinner
@@ -30,6 +33,7 @@ class MainWindow : JFrame() {
     val minSz = Dimension(600, 450)
     val converter: Converter
     val newtonPol: Newton
+    val polPainter: PolinomialPainter
 
     init{
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -128,11 +132,15 @@ class MainWindow : JFrame() {
             jsYMax.value as Double,
             mainPanel.width, mainPanel.height, converter)
 
+        newtonPol = Newton()
+        polPainter = PolinomialPainter(newtonPol, converter)
+
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
                 converter.width = mainPanel.width
                 converter.height = mainPanel.height
                 cartPainter.converter = converter
+                polPainter.converter = converter
                 mainPanel.paint(mainPanel.graphics)
             }
         })
@@ -141,12 +149,14 @@ class MainWindow : JFrame() {
             nmXMin.maximum = nmXMax.value as Double - nmXMin.stepSize.toDouble()*2.0
             converter.xEdges = Pair(nmXMin.value as Double, nmXMax.value as Double)
             cartPainter.converter = converter
+            polPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
         nmXMin.addChangeListener { _ ->
             nmXMax.minimum = nmXMin.value as Double + nmXMax.stepSize.toDouble()*2.0
             converter.xEdges = Pair(nmXMin.value as Double, nmXMax.value as Double)
             cartPainter.converter = converter
+            polPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
 
@@ -154,85 +164,70 @@ class MainWindow : JFrame() {
             nmYMin.maximum = nmYMax.value as Double - nmYMin.stepSize.toDouble()*2.0
             converter.yEdges = Pair(nmYMin.value as Double, nmYMax.value as Double)
             cartPainter.converter = converter
+            polPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
         nmYMin.addChangeListener { _ ->
             nmYMax.minimum = nmYMin.value as Double + nmYMax.stepSize.toDouble()*2.0
             converter.yEdges = Pair(nmYMin.value as Double, nmYMax.value as Double)
             cartPainter.converter = converter
+            polPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
-
-        newtonPol = Newton()
 
         mainPanel.addMouseListener(
             object : MouseAdapter(){
                 override fun mousePressed(e: MouseEvent) {
-                    newtonPol.addNode(converter.xScrToCrt(e.x), converter.yScrToCrt(e.y))
-                    mainPanel.repaint()
+                    if(e.button == MouseEvent.BUTTON1)
+                    {
+                        addPoint(e.x, e.y)
+                        mainPanel.repaint()
+                    }
+                    if (e.button == MouseEvent.BUTTON3)
+                    {
+                        deletePoint(e.x, e.y)
+                        mainPanel.repaint()
+                    }
                 }
             }
         )
 
+
         mainPanel.painters.add(cartPainter)
+        mainPanel.painters.add(polPainter)
     }
-
-
 
     companion object{
         val SHRINK = GroupLayout.PREFERRED_SIZE
         val GROW = GroupLayout.DEFAULT_SIZE
     }
+
+    private fun addPoint(x: Int, y: Int)
+    {
+        val conv_x = converter.xScrToCrt(x)
+        val conv_y = converter.yScrToCrt(y)
+        newtonPol.nodeX.forEach{v ->
+            if (abs(v-conv_x) < 0.05)
+                return
+        }
+        newtonPol.addNode(conv_x, conv_y)
+    }
+
+    private fun deletePoint(x: Int, y: Int)
+    {
+        val conv_x = converter.xScrToCrt(x)
+        val conv_y = converter.yScrToCrt(y)
+        for(i in 0 until newtonPol.nodeX.size)
+        {
+            if (abs(newtonPol.nodeX[i]-conv_x) < 0.05)
+            {
+                newtonPol.deleteNode(i)
+                break
+                println(newtonPol.nodeX)
+            }
+        }
+    }
 }
 
 // TODO: 1) Доделать класс конвертер
 //       2) Сделать ещё 2 класса к конвертору: пенитер, картезианПеинтер(линия с разметкой)
-//
-//    val minSize = Dimension(600,450)
-//
-//    val btn = JButton()
-//    val tf = JTextField()
-//    val lblResult = JLabel()
-//
-//
-//    init{
-//        size = minSize
-//        defaultCloseOperation = EXIT_ON_CLOSE
-//
-//        btn.apply {
-//            text = "Нажми меня"
-//            size = Dimension(70, 25)
-//            location = Point(10,10)
-//        }
-//        lblResult.text = "Здесь будет текст пользователя"
-//
-//        val gl = GroupLayout(contentPane)
-//        layout = gl
-//
-//        gl.setVerticalGroup(gl.createSequentialGroup()
-//            .addGap(8)
-//            .addComponent(tf, 25, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-//            .addGap(8, 8, Int.MAX_VALUE)
-//            .addComponent(btn, 25, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-//            .addGap(8, 8, Int.MAX_VALUE)
-//            .addComponent(lblResult, 25, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-//            .addGap(8)
-//        )
-//
-//        // Default - максимум, Preferred(сплющивает) - вмещаюющий содержимое
-//        gl.setHorizontalGroup(gl.createSequentialGroup()
-//            .addGap(8)
-//            .addGroup(gl.createParallelGroup()
-//                .addComponent(tf)
-//                .addGroup(gl.createSequentialGroup()
-//                    .addGap(8,8,Int.MAX_VALUE)
-//                    .addComponent(btn,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE)
-//                    .addGap(8,8,Int.MAX_VALUE)
-//                )
-//                .addComponent(lblResult,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE)
-//            )
-//            .addGap(8)
-//        )
-//    }
-//
-//}

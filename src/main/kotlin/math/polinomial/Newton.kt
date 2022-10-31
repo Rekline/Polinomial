@@ -2,8 +2,10 @@ package math.polinomial
 
 class Newton (val coeffMap : MutableMap<Double, Double>) : Polynomial() {
 
-    protected val nodeX : MutableList<Double> = arrayListOf()
-    protected val nodeY : MutableList<Double> = arrayListOf()
+    public val nodeX : MutableList<Double> = arrayListOf()
+    public val nodeY : MutableList<Double> = arrayListOf()
+
+    constructor(): this(mutableMapOf(0.0 to 0.0))
 
     init{
         nodeX.addAll(coeffMap.keys)
@@ -45,6 +47,17 @@ class Newton (val coeffMap : MutableMap<Double, Double>) : Polynomial() {
         nodeY.add(y)
         res.timesAssign(getDivDiff())
         res.plusAssign( this)
+        _coeff.clear()
+        _coeff.addAll(0, res.coeff)
+    }
+
+    public fun deleteNode(i: Int) : Unit
+    {
+        nodeX.removeAt(i)
+        nodeY.removeAt(i)
+        val map = mutableMapOf<Double,Double>()
+        nodeX.forEachIndexed{ j, v -> map.put(nodeX[j], nodeY[j]) }
+        val res = Newton(map)
         _coeff.clear()
         _coeff.addAll(0, res.coeff)
     }
