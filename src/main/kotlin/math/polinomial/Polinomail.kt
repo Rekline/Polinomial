@@ -116,8 +116,19 @@ open class Polynomial(vararg coeffs: Double) {
         _coeff.forEachIndexed{i, v -> if(v neq other.coeff[i]) return false}
         return true
     }
-
     override fun hashCode(): Int = _coeff.hashCode()
+
+    public fun getDerivative() : Polynomial
+    {
+        val res = Polynomial()
+        if (coeff.size > 0)
+        {
+            res._coeff.remove(res.coeff[0])
+            for (i in 1 until coeff.size)
+                res._coeff.add(coeff[i] * i)
+        }
+        return res
+    }
 
     /** Взятие значения в точке */
     operator fun invoke(x: Double): Double {

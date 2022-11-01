@@ -32,8 +32,12 @@ class MainWindow : JFrame() {
     val mainPanel: GraphicsPanel
     val minSz = Dimension(600, 450)
     val converter: Converter
-    val newtonPol: Newton
+    val polyNewton: Newton
     val polPainter: PolinomialPainter
+    val btnClear: Button
+    val cbShowPolynomial: JCheckBox
+    val cbShowDerivative: JCheckBox
+    val cbShowPoints: JCheckBox
 
     init{
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -60,20 +64,12 @@ class MainWindow : JFrame() {
         lblYMax.text = "Ymax: "
         mainPanel = GraphicsPanel()
         mainPanel.background = Color.WHITE
-
+        btnClear = Button("Очистить")
+        cbShowPolynomial = JCheckBox("Показывать полином",true)
+        cbShowDerivative = JCheckBox("Показывать производную",true)
+        cbShowPoints = JCheckBox("Показывать точки",true)
         pnlColor1 = JPanel()
         pnlColor1.background = Color.BLUE
-        pnlColor1.addMouseListener(object : MouseAdapter(){
-            override fun mouseClicked(e: MouseEvent?) {
-                JColorChooser.showDialog(
-                    this@MainWindow,
-                    "Выбор цвета полинома",
-                    pnlColor1.background
-                )?.let{
-                    pnlColor1.background = it
-                }
-            }
-        })
 
         layout = GroupLayout(contentPane).apply {
             setHorizontalGroup(createSequentialGroup()
@@ -86,6 +82,7 @@ class MainWindow : JFrame() {
                         .addGap(16)
                         .addComponent(lblXMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsXMax, 70, SHRINK, SHRINK)
+
                     )
                     .addGroup(createSequentialGroup()
                         .addComponent(lblYMin, SHRINK, SHRINK, SHRINK)
@@ -93,6 +90,11 @@ class MainWindow : JFrame() {
                         .addGap(16)
                         .addComponent(lblYMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsYMax, 70, SHRINK, SHRINK)
+                    )
+                    .addGroup(createSequentialGroup()
+                        .addComponent(cbShowPolynomial, SHRINK, SHRINK, SHRINK)
+                        .addComponent(cbShowDerivative, SHRINK, SHRINK, SHRINK)
+                        .addComponent(cbShowPoints, SHRINK, SHRINK, SHRINK)
                     )
                     .addComponent(pnlColor1, 20, 20, 20)
                 )
@@ -117,6 +119,12 @@ class MainWindow : JFrame() {
                         .addComponent(lblYMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsYMax, SHRINK, SHRINK, SHRINK)
                 )
+                .addGroup(
+                    createParallelGroup()
+                        .addComponent(cbShowPolynomial, SHRINK, SHRINK, SHRINK)
+                        .addComponent(cbShowDerivative, SHRINK, SHRINK, SHRINK)
+                        .addComponent(cbShowPoints, SHRINK, SHRINK, SHRINK)
+                )
                 .addComponent(pnlColor1, 20, 20, 20)
                 .addGap(8)
             )
@@ -132,8 +140,8 @@ class MainWindow : JFrame() {
             jsYMax.value as Double,
             mainPanel.width, mainPanel.height, converter)
 
-        newtonPol = Newton()
-        polPainter = PolinomialPainter(newtonPol, converter)
+        polyNewton = Newton()
+        polPainter = PolinomialPainter(polyNewton, converter)
 
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -174,7 +182,6 @@ class MainWindow : JFrame() {
             polPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
-
         mainPanel.addMouseListener(
             object : MouseAdapter(){
                 override fun mousePressed(e: MouseEvent) {
@@ -191,7 +198,33 @@ class MainWindow : JFrame() {
                 }
             }
         )
-
+        pnlColor1.addMouseListener(object : MouseAdapter(){
+            override fun mouseClicked(e: MouseEvent?) {
+                JColorChooser.showDialog(
+                    this@MainWindow,
+                    "Выбор цвета полинома",
+                    pnlColor1.background
+                )?.let{
+                    pnlColor1.background = it
+                }
+            }
+        })
+        btnClear.addActionListener {
+            polyNewton.clearPolynomial()
+            mainPanel.repaint()
+        }
+        cbShowPolynomial.addActionListener{
+            polPainter.isPolinomialVisible = cbShowPolynomial.isSelected
+            mainPanel.repaint()
+        }
+        cbShowDerivative.addActionListener{
+            polPainter.isDerivativeVisible = cbShowDerivative.isSelected
+            mainPanel.repaint()
+        }
+        cbShowPoints.addActionListener{
+            polPainter.isPointsVisible = cbShowPoints.isSelected
+            mainPanel.repaint()
+        }
 
         mainPanel.painters.add(cartPainter)
         mainPanel.painters.add(polPainter)
@@ -206,28 +239,24 @@ class MainWindow : JFrame() {
     {
         val conv_x = converter.xScrToCrt(x)
         val conv_y = converter.yScrToCrt(y)
-        newtonPol.nodeX.forEach{v ->
+        polyNewton.xList.forEach{ v ->
             if (abs(v-conv_x) < 0.05)
                 return
         }
-        newtonPol.addNode(conv_x, conv_y)
+        polyNewton.addNode(conv_x, conv_y)
     }
 
     private fun deletePoint(x: Int, y: Int)
     {
         val conv_x = converter.xScrToCrt(x)
         val conv_y = converter.yScrToCrt(y)
-        for(i in 0 until newtonPol.nodeX.size)
+        for(i in 0 until polyNewton.xList.size)
         {
-            if (abs(newtonPol.nodeX[i]-conv_x) < 0.05)
+            if (abs(polyNewton.xList[i]-conv_x) < 0.05)
             {
-                newtonPol.deleteNode(i)
+                polyNewton.deleteNode(i)
                 break
-                println(newtonPol.nodeX)
             }
         }
     }
 }
-
-// TODO: 1) Доделать класс конвертер
-//       2) Сделать ещё 2 класса к конвертору: пенитер, картезианПеинтер(линия с разметкой)

@@ -2,10 +2,20 @@ package math.polinomial
 
 class Newton (val coeffMap : MutableMap<Double, Double>) : Polynomial() {
 
-    public val nodeX : MutableList<Double> = arrayListOf()
-    public val nodeY : MutableList<Double> = arrayListOf()
+    private val nodeX : MutableList<Double> = arrayListOf()
+    private val nodeY : MutableList<Double> = arrayListOf()
 
-    constructor(): this(mutableMapOf(0.0 to 0.0))
+    public val xList: MutableList<Double>
+        get() = nodeX
+
+    public val yList: MutableList<Double>
+        get() = nodeY
+
+    constructor(): this(mutableMapOf(0.0 to 0.0)){
+        _coeff.clear()
+        nodeX.clear()
+        nodeY.clear()
+    }
 
     init{
         nodeX.addAll(coeffMap.keys)
@@ -60,6 +70,13 @@ class Newton (val coeffMap : MutableMap<Double, Double>) : Polynomial() {
         val res = Newton(map)
         _coeff.clear()
         _coeff.addAll(0, res.coeff)
+    }
+
+    public fun clearPolynomial() : Unit
+    {
+        nodeX.clear()
+        nodeY.clear()
+        _coeff.clear()
     }
 
     private fun getDivDiff() : Double

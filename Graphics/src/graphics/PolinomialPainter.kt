@@ -7,18 +7,18 @@ import kotlin.math.max
 
 class PolinomialPainter(polinomial: Newton, converter: Converter): Painter {
 
-    private val polinomial: Newton
+    private val polynomial: Newton
 
     public var colorPolinomial: Color = Color.BLACK
 
     public var colorPoint: Color = Color.BLUE
 
-    public var colorDerivative: Color = Color.BLACK
+    public var colorDerivative: Color = Color.GREEN
     public var isPolinomialVisible: Boolean = true
         get() = field
         set(value) {field = value}
 
-    public var isPointVisible: Boolean = true
+    public var isPointsVisible: Boolean = true
         get() = field
         set(value) {field = value}
 
@@ -43,40 +43,58 @@ class PolinomialPainter(polinomial: Newton, converter: Converter): Painter {
 
     init {
         this.converter = converter
-        this.polinomial = polinomial
+        this.polynomial = polinomial
     }
 
     private fun paintPolinomial(g: Graphics)
     {
         if (isPolinomialVisible == true)
         {
+            g.color = colorPolinomial
             for (i in 0 .. converter.width)
             {
-                g.color = colorPolinomial
-                val y1 = converter.yCrtToScr(polinomial(converter.xScrToCrt(i)))
-                val y2 = converter.yCrtToScr(polinomial(converter.xScrToCrt(i+1)))
+                val y1 = converter.yCrtToScr(polynomial(converter.xScrToCrt(i)))
+                val y2 = converter.yCrtToScr(polynomial(converter.xScrToCrt(i+1)))
                 g.drawLine(i,y1,i+1,y2)
             }
         }
     }
     private fun paintPoint(g: Graphics)
     {
-        if (isPointVisible == true)
+        if (isPointsVisible == true)
+        {
             g.color = colorPoint
-            for(i in 0 until polinomial.nodeX.size){
-                g.fillOval(converter.xCrtToScr(polinomial.nodeX[i]) - 2,
-                    converter.yCrtToScr(polinomial.nodeY[i]) - 2,
+            for(i in 0 until polynomial.xList.size){
+                g.fillOval(converter.xCrtToScr(polynomial.xList[i]) - 2,
+                    converter.yCrtToScr(polynomial.yList[i]) - 2,
                     5,
                     5)
             }
+        }
+    }
+
+    private fun paintDerivative(g: Graphics)
+    {
+        if (isDerivativeVisible == true)
+        {
+            g.color = colorDerivative
+            val dPolynomial = polynomial.getDerivative()
+            for (i in 0 .. converter.width)
+            {
+                val y1 = converter.yCrtToScr(dPolynomial(converter.xScrToCrt(i)))
+                val y2 = converter.yCrtToScr(dPolynomial(converter.xScrToCrt(i+1)))
+                g.drawLine(i,y1,i+1,y2)
+            }
+        }
     }
 
     override fun paint(g: Graphics?)
     {
         if (g != null){
-            if (polinomial.order > 0){
+            if (polynomial.order > 0){
                 paintPolinomial(g)
                 paintPoint(g)
+                paintDerivative(g)
             }
         }
     }

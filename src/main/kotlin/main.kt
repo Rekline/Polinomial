@@ -1,8 +1,12 @@
 import gui.MainWindow
+import math.polinomial.Polynomial
 
 
 fun main() {
     MainWindow().isVisible = true
+//    val poly = Polynomial(0.0, 2.0, 3.0)
+//    println(poly)
+//    println(poly.getDerivative())
 }
 // Генерация массивов случайных чисел
 //    val sz = 1000
