@@ -7,6 +7,7 @@ import graphics.PolinomialPainter
 import math.polinomial.Newton
 import java.awt.Button
 import java.awt.Color
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -28,7 +29,9 @@ class MainWindow : JFrame() {
     val lblXMax: JLabel
     val lblYMin: JLabel
     val lblYMax: JLabel
-    val pnlColor1: JPanel
+    val pnlColorPoly: JPanel
+    val pnlColorDerivative: JPanel
+    val pnlColorPoints: JPanel
     val mainPanel: GraphicsPanel
     val minSz = Dimension(600, 450)
     val converter: Converter
@@ -68,8 +71,12 @@ class MainWindow : JFrame() {
         cbShowPolynomial = JCheckBox("Показывать полином",true)
         cbShowDerivative = JCheckBox("Показывать производную",true)
         cbShowPoints = JCheckBox("Показывать точки",true)
-        pnlColor1 = JPanel()
-        pnlColor1.background = Color.BLUE
+        pnlColorPoly = JPanel()
+        pnlColorPoly.background = Color.BLACK
+        pnlColorDerivative = JPanel()
+        pnlColorDerivative.background = Color.GREEN
+        pnlColorPoints = JPanel()
+        pnlColorPoints.background = Color.BLUE
 
         layout = GroupLayout(contentPane).apply {
             setHorizontalGroup(createSequentialGroup()
@@ -82,7 +89,8 @@ class MainWindow : JFrame() {
                         .addGap(16)
                         .addComponent(lblXMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsXMax, 70, SHRINK, SHRINK)
-
+                        .addGap(16)
+                        .addComponent(pnlColorPoly, SHRINK, SHRINK, SHRINK)
                     )
                     .addGroup(createSequentialGroup()
                         .addComponent(lblYMin, SHRINK, SHRINK, SHRINK)
@@ -90,13 +98,18 @@ class MainWindow : JFrame() {
                         .addGap(16)
                         .addComponent(lblYMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsYMax, 70, SHRINK, SHRINK)
+                        .addGap(16)
+                        .addComponent(pnlColorDerivative, SHRINK, SHRINK, SHRINK)
+                    )
+                    .addGroup(createSequentialGroup()
+                        .addComponent(pnlColorPoints, SHRINK, SHRINK, SHRINK)
                     )
                     .addGroup(createSequentialGroup()
                         .addComponent(cbShowPolynomial, SHRINK, SHRINK, SHRINK)
                         .addComponent(cbShowDerivative, SHRINK, SHRINK, SHRINK)
                         .addComponent(cbShowPoints, SHRINK, SHRINK, SHRINK)
                     )
-                    .addComponent(pnlColor1, 20, 20, 20)
+                    .addComponent(pnlColorPoly, 20, 20, 20)
                 )
                 .addGap(8)
             )
@@ -111,6 +124,7 @@ class MainWindow : JFrame() {
                         .addComponent(jsXMin, SHRINK, SHRINK, SHRINK)
                         .addComponent(lblXMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsXMax, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorPoly , SHRINK, SHRINK, SHRINK)
                 )
                 .addGroup(
                     createParallelGroup()
@@ -118,6 +132,10 @@ class MainWindow : JFrame() {
                         .addComponent(jsYMin, SHRINK, SHRINK, SHRINK)
                         .addComponent(lblYMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsYMax, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorDerivative, SHRINK, SHRINK, SHRINK)
+                )
+                .addGroup(createParallelGroup()
+                    .addComponent(pnlColorPoints, SHRINK, SHRINK, SHRINK)
                 )
                 .addGroup(
                     createParallelGroup()
@@ -125,7 +143,7 @@ class MainWindow : JFrame() {
                         .addComponent(cbShowDerivative, SHRINK, SHRINK, SHRINK)
                         .addComponent(cbShowPoints, SHRINK, SHRINK, SHRINK)
                 )
-                .addComponent(pnlColor1, 20, 20, 20)
+                .addComponent(pnlColorPoly, 20, 20, 20)
                 .addGap(8)
             )
         }
@@ -198,14 +216,39 @@ class MainWindow : JFrame() {
                 }
             }
         )
-        pnlColor1.addMouseListener(object : MouseAdapter(){
+        pnlColorPoly.addMouseListener(object : MouseAdapter(){
             override fun mouseClicked(e: MouseEvent?) {
                 JColorChooser.showDialog(
                     this@MainWindow,
                     "Выбор цвета полинома",
-                    pnlColor1.background
+                    pnlColorPoly.background
                 )?.let{
-                    pnlColor1.background = it
+                    pnlColorPoly.background = it
+                    polPainter.colorPolinomial = it
+                }
+            }
+        })
+        pnlColorDerivative.addMouseListener(object : MouseAdapter(){
+            override fun mouseClicked(e: MouseEvent?) {
+                JColorChooser.showDialog(
+                    this@MainWindow,
+                    "Выбор цвета производной",
+                    pnlColorDerivative.background
+                )?.let{
+                    pnlColorDerivative.background = it
+                    polPainter.colorDerivative = it
+                }
+            }
+        })
+        pnlColorPoints.addMouseListener(object : MouseAdapter(){
+            override fun mouseClicked(e: MouseEvent?) {
+                JColorChooser.showDialog(
+                    this@MainWindow,
+                    "Выбор цвета производной",
+                    pnlColorPoints.background
+                )?.let{
+                    pnlColorPoints.background = it
+                    polPainter.colorPoints = it
                 }
             }
         })

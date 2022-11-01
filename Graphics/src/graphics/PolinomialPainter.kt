@@ -11,7 +11,7 @@ class PolinomialPainter(polinomial: Newton, converter: Converter): Painter {
 
     public var colorPolinomial: Color = Color.BLACK
 
-    public var colorPoint: Color = Color.BLUE
+    public var colorPoints: Color = Color.BLUE
 
     public var colorDerivative: Color = Color.GREEN
     public var isPolinomialVisible: Boolean = true
@@ -63,7 +63,7 @@ class PolinomialPainter(polinomial: Newton, converter: Converter): Painter {
     {
         if (isPointsVisible == true)
         {
-            g.color = colorPoint
+            g.color = colorPoints
             for(i in 0 until polynomial.xList.size){
                 g.fillOval(converter.xCrtToScr(polynomial.xList[i]) - 2,
                     converter.yCrtToScr(polynomial.yList[i]) - 2,
