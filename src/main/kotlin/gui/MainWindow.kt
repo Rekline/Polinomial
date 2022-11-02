@@ -181,7 +181,7 @@ class MainWindow : JFrame() {
         polyNewton = Newton()
         polPainter = FunctionPainter(polyNewton.lambda, converter)
         derivPolPainter = FunctionPainter(polyNewton.getDerivative().lambda, converter)
-        derivPolPainter.colorFunc = Color.GREEN
+        derivPolPainter.color = Color.GREEN
         pointPolPainter = PointPainter(converter)
 
         mainPanel.addComponentListener(object : ComponentAdapter() {
@@ -191,6 +191,7 @@ class MainWindow : JFrame() {
                 cartPainter.converter = converter
                 polPainter.converter = converter
                 derivPolPainter.converter = converter
+                pointPolPainter.converter = converter
                 mainPanel.paint(mainPanel.graphics)
             }
         })
@@ -251,7 +252,7 @@ class MainWindow : JFrame() {
                     pnlColorPoly.background
                 )?.let{
                     pnlColorPoly.background = it
-                    polPainter.colorFunc = it
+                    polPainter.color = it
                     mainPanel.repaint()
                 }
             }
@@ -264,7 +265,7 @@ class MainWindow : JFrame() {
                     pnlColorDerivative.background
                 )?.let{
                     pnlColorDerivative.background = it
-                    derivPolPainter.colorFunc = it
+                    derivPolPainter.color = it
                     mainPanel.repaint()
                 }
             }
@@ -277,7 +278,7 @@ class MainWindow : JFrame() {
                     pnlColorPoints.background
                 )?.let{
                     pnlColorPoints.background = it
-                    pointPolPainter.colorPoints = it
+                    pointPolPainter.color = it
                     mainPanel.repaint()
                 }
             }

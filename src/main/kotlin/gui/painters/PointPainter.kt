@@ -9,7 +9,7 @@ import kotlin.math.max
 class PointPainter(
     converter: Converter): Painter {
 
-    var colorPoints: Color = Color.BLUE
+    var color: Color = Color.BLUE
 
     var xList: MutableList<Double> = mutableListOf()
     var yList: MutableList<Double> = mutableListOf()
@@ -22,7 +22,7 @@ class PointPainter(
         get() = field
         set(value) {field = max(1,value) }
 
-    public var converter: Converter = Converter(0.0,0.0,0.0,0.0,0,0)
+    var converter: Converter = Converter(0.0,0.0,0.0,0.0,0,0)
         get() = field
         set(value) {
             field = value
@@ -42,7 +42,7 @@ class PointPainter(
     {
         if (isVisible == true)
         {
-            g.color = colorPoints
+            g.color = color
             for(i in 0 until xList.size){
                 g.fillOval(converter.xCrtToScr(xList[i]) - 2,
                     converter.yCrtToScr(yList[i]) - 2,

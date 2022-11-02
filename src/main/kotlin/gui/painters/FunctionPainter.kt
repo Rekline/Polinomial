@@ -4,14 +4,13 @@ import graphics.Converter
 import graphics.Painter
 import java.awt.Color
 import java.awt.Graphics
-import java.awt.Paint
 import kotlin.math.max
 
 class FunctionPainter(func: (x: Double) -> (Double), converter: Converter): Painter {
 
     var func: (x: Double) -> (Double)
 
-    var colorFunc: Color = Color.BLACK
+    var color: Color = Color.BLACK
 
     var isVisible: Boolean = true
         get() = field
@@ -25,7 +24,7 @@ class FunctionPainter(func: (x: Double) -> (Double), converter: Converter): Pain
         get() = field
         set(value) {field = max(1,value) }
 
-    public var converter: Converter = Converter(0.0,0.0,0.0,0.0,0,0)
+    var converter: Converter = Converter(0.0,0.0,0.0,0.0,0,0)
         get() = field
         set(value) {
             field = value
@@ -42,7 +41,7 @@ class FunctionPainter(func: (x: Double) -> (Double), converter: Converter): Pain
     {
         if (isVisible == true)
         {
-            g.color = colorFunc
+            g.color = color
             for (i in 0 .. converter.width)
             {
                 val y1 = converter.yCrtToScr(func(converter.xScrToCrt(i)))

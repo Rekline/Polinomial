@@ -56,21 +56,21 @@ class CartesianPainter(converter: Converter) : Painter {
     private fun paintMarkup(g: Graphics){
 
         if (yMax <= 0)
-            paintYMarkups(0, g)
+            paintXMarkups(0, g)
         else if (yMin >= 0)
-            paintYMarkups(height,g)
+            paintXMarkups(height,g)
         else
-            paintYMarkups(converter.yCrtToScr(0.0),g)
+            paintXMarkups(converter.yCrtToScr(0.0),g)
 
         if(xMax <= 0)
-            paintXMarkups(width-1, g)
+            paintYMarkups(width-1, g)
         else if (xMin >= 0)
-            paintXMarkups(0, g)
+            paintYMarkups(0, g)
         else
-            paintXMarkups(converter.xCrtToScr(0.0), g)
+            paintYMarkups(converter.xCrtToScr(0.0), g)
     }
 
-    private fun paintYMarkups(y0: Int, g: Graphics)
+    private fun paintXMarkups(y0: Int, g: Graphics)
     {
         for( i in (xMin*10).toInt()..(xMax*10).toInt())
         {
@@ -84,10 +84,10 @@ class CartesianPainter(converter: Converter) : Painter {
                 g.color=Color.BLACK
             }
             val x=converter.xCrtToScr(i/10.0)
-            g.drawLine(x, y0 - div, x, y0 + div);
+            g.drawLine(x, y0 - div, x, y0 + div)
         }
     }
-    private fun paintXMarkups(x0: Int, g: Graphics)
+    private fun paintYMarkups(x0: Int, g: Graphics)
     {
         for (i in (yMin*10).toInt()..(yMax*10).toInt()){
             g.color= Color.BLUE
