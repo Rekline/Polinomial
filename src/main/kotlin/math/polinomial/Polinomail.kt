@@ -13,6 +13,12 @@ open class Polynomial(vararg coeffs: Double) {
     val order: Int
         get() = _coeff.size - 1
 
+    val lambda: (x: Double) -> (Double) = { x: Double ->
+        var p = 1.0
+        if (coeff.isEmpty()) 0.0
+        else
+        coeff.reduce { acc, d -> p *= x; acc + d * p; } }
+
     init{
         _coeff = coeffs.toMutableList()
         for(i in _coeff.size - 1 downTo  0)
@@ -133,6 +139,8 @@ open class Polynomial(vararg coeffs: Double) {
     /** Взятие значения в точке */
     operator fun invoke(x: Double): Double {
         var p = 1.0
+        if (_coeff.isEmpty())
+            return 0.0
         return _coeff.reduce { acc, d -> p *= x; acc + d * p; }
     }
 

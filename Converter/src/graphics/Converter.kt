@@ -80,17 +80,17 @@ class Converter(
     }
 
     public fun yCrtToScr(y: Double): Int{
-        var res = ((yMax - y) * yDen).toInt()
-        if (res < -height) res = (-1.0 * height).toInt()
-        if (res > 2 * height) res = (2.0 * height).toInt()
-        return res
+        var res = ((yMax - y) * yDen)
+        if (res < -height) res = (-1.0 * height)
+        if (res > 2 * height) res = (2.0 * height)
+        return res.toInt()
     }
 
     public fun xCrtToScr(x: Double): Int {
-        var res = ((x - xMin) * xDen).toInt()
-        if (res < -width) res = (-1.0 * width).toInt()
-        if (res > 2 * width) res = (2.0 * width).toInt()
-        return res
+        var res = ((x - xMin) * xDen)
+        if (res < -width) res = (-1.0 * width)
+        if (res > 2 * width) res = (2.0 * width)
+        return res.toInt()
     }
 
     //public fun yScrToCrt(y: Int): Double

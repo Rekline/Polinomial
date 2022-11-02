@@ -3,7 +3,8 @@ package gui
 import graphics.Converter
 import graphics.GraphicsPanel
 import gui.painters.CartesianPainter
-import gui.painters.PolinomialPainter
+import gui.painters.FunctionPainter
+import gui.painters.PointPainter
 import math.polinomial.Newton
 import java.awt.Button
 import java.awt.Color
@@ -38,11 +39,14 @@ class MainWindow : JFrame() {
     private val minSz = Dimension(600, 450)
     private val converter: Converter
     private val polyNewton: Newton
-    private val polPainter: PolinomialPainter
+    private val polPainter: FunctionPainter
+    private val derivPolPainter: FunctionPainter
+    private val pointPolPainter: PointPainter
     private val btnClear: Button
     private val cbShowPolynomial: JCheckBox
     private val cbShowDerivative: JCheckBox
     private val cbShowPoints: JCheckBox
+    private val cartPainter : CartesianPainter
 
     init{
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -165,19 +169,20 @@ class MainWindow : JFrame() {
                 .addGap(8)
             )
         }
+
         converter = Converter(jsXMin.value as Double,
             jsXMax.value as Double,
             jsYMin.value as Double,
             jsYMax.value as Double,
             mainPanel.width, mainPanel.height)
-        val cartPainter = CartesianPainter(jsXMin.value as Double,
-            jsXMax.value as Double,
-            jsYMin.value as Double,
-            jsYMax.value as Double,
-            mainPanel.width, mainPanel.height, converter)
+        cartPainter = CartesianPainter(converter)
+
 
         polyNewton = Newton()
-        polPainter = PolinomialPainter(polyNewton, converter)
+        polPainter = FunctionPainter(polyNewton.lambda, converter)
+        derivPolPainter = FunctionPainter(polyNewton.getDerivative().lambda, converter)
+        derivPolPainter.colorFunc = Color.GREEN
+        pointPolPainter = PointPainter(converter)
 
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -185,15 +190,16 @@ class MainWindow : JFrame() {
                 converter.height = mainPanel.height
                 cartPainter.converter = converter
                 polPainter.converter = converter
+                derivPolPainter.converter = converter
                 mainPanel.paint(mainPanel.graphics)
             }
         })
-
         nmXMax.addChangeListener { _ ->
             nmXMin.maximum = nmXMax.value as Double - nmXMin.stepSize.toDouble()*2.0
             converter.xEdges = Pair(nmXMin.value as Double, nmXMax.value as Double)
             cartPainter.converter = converter
             polPainter.converter = converter
+            derivPolPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
         nmXMin.addChangeListener { _ ->
@@ -201,14 +207,15 @@ class MainWindow : JFrame() {
             converter.xEdges = Pair(nmXMin.value as Double, nmXMax.value as Double)
             cartPainter.converter = converter
             polPainter.converter = converter
+            derivPolPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
-
         nmYMax.addChangeListener { _ ->
             nmYMin.maximum = nmYMax.value as Double - nmYMin.stepSize.toDouble()*2.0
             converter.yEdges = Pair(nmYMin.value as Double, nmYMax.value as Double)
             cartPainter.converter = converter
             polPainter.converter = converter
+            derivPolPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
         nmYMin.addChangeListener { _ ->
@@ -216,19 +223,21 @@ class MainWindow : JFrame() {
             converter.yEdges = Pair(nmYMin.value as Double, nmYMax.value as Double)
             cartPainter.converter = converter
             polPainter.converter = converter
+            derivPolPainter.converter = converter
             mainPanel.paint(mainPanel.graphics)
         }
+
         mainPanel.addMouseListener(
             object : MouseAdapter(){
                 override fun mousePressed(e: MouseEvent) {
                     if(e.button == MouseEvent.BUTTON1)
                     {
-                        addPoint(e.x, e.y)
+                        tryToAddPoint(e.x, e.y)
                         mainPanel.repaint()
                     }
                     if (e.button == MouseEvent.BUTTON3)
                     {
-                        deletePoint(e.x, e.y)
+                        tryToDeletePoint(e.x)
                         mainPanel.repaint()
                     }
                 }
@@ -242,7 +251,7 @@ class MainWindow : JFrame() {
                     pnlColorPoly.background
                 )?.let{
                     pnlColorPoly.background = it
-                    polPainter.colorPolinomial = it
+                    polPainter.colorFunc = it
                     mainPanel.repaint()
                 }
             }
@@ -255,7 +264,7 @@ class MainWindow : JFrame() {
                     pnlColorDerivative.background
                 )?.let{
                     pnlColorDerivative.background = it
-                    polPainter.colorDerivative = it
+                    derivPolPainter.colorFunc = it
                     mainPanel.repaint()
                 }
             }
@@ -268,30 +277,35 @@ class MainWindow : JFrame() {
                     pnlColorPoints.background
                 )?.let{
                     pnlColorPoints.background = it
-                    polPainter.colorPoints = it
+                    pointPolPainter.colorPoints = it
                     mainPanel.repaint()
                 }
             }
         })
         btnClear.addActionListener {
             polyNewton.clearPolynomial()
+            derivPolPainter.func = polyNewton.getDerivative().lambda
+            pointPolPainter.xList.clear()
+            pointPolPainter.yList.clear()
             mainPanel.repaint()
         }
         cbShowPolynomial.addActionListener{
-            polPainter.isPolinomialVisible = cbShowPolynomial.isSelected
+            polPainter.isVisible = cbShowPolynomial.isSelected
             mainPanel.repaint()
         }
         cbShowDerivative.addActionListener{
-            polPainter.isDerivativeVisible = cbShowDerivative.isSelected
+            derivPolPainter.isVisible = cbShowDerivative.isSelected
             mainPanel.repaint()
         }
         cbShowPoints.addActionListener{
-            polPainter.isPointsVisible = cbShowPoints.isSelected
+            pointPolPainter.isVisible = cbShowPoints.isSelected
             mainPanel.repaint()
         }
 
         mainPanel.painters.add(cartPainter)
         mainPanel.painters.add(polPainter)
+        mainPanel.painters.add(derivPolPainter)
+        mainPanel.painters.add(pointPolPainter)
     }
 
     companion object{
@@ -299,28 +313,33 @@ class MainWindow : JFrame() {
         val GROW = GroupLayout.DEFAULT_SIZE
     }
 
-    private fun addPoint(x: Int, y: Int)
+    private fun tryToAddPoint(x: Int, y: Int)
     {
         val conv_x = converter.xScrToCrt(x)
         val conv_y = converter.yScrToCrt(y)
         val rad = converter.yScrToCrt(1) - converter.yScrToCrt(0)
-        polyNewton.xList.forEach{ v ->
+        pointPolPainter.xList.forEach{ v ->
             if (abs(v-conv_x) < 5*abs(rad))
                 return
         }
         polyNewton.addNode(conv_x, conv_y)
+        pointPolPainter.xList.add(conv_x)
+        pointPolPainter.yList.add(conv_y)
+        derivPolPainter.func = polyNewton.getDerivative().lambda
     }
 
-    private fun deletePoint(x: Int, y: Int)
+    private fun tryToDeletePoint(x: Int)
     {
         val conv_x = converter.xScrToCrt(x)
-        for(i in 0 until polyNewton.xList.size)
+        for(i in 0 until pointPolPainter.xList.size)
         {
             val rad = converter.yScrToCrt(1) - converter.yScrToCrt(0)
-            // 0.05
-            if (abs(polyNewton.xList[i]-conv_x) < abs(rad))
+            if (abs(pointPolPainter.xList[i]-conv_x) < abs(rad))
             {
                 polyNewton.deleteNode(i)
+                pointPolPainter.xList.removeAt(i)
+                pointPolPainter.yList.removeAt(i)
+                derivPolPainter.func = polyNewton.getDerivative().lambda
                 break
             }
         }

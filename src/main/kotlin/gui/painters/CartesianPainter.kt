@@ -6,14 +6,7 @@ import java.awt.Color
 import java.awt.Graphics
 import kotlin.math.max
 
-class CartesianPainter(xMin: Double,
-                       xMax: Double,
-                       yMin: Double,
-                       yMax: Double,
-                       width: Int,
-                       height: Int,
-                        converter: Converter
-) : Painter {
+class CartesianPainter(converter: Converter) : Painter {
 
     override var height: Int = 1
         get() = field
@@ -63,46 +56,44 @@ class CartesianPainter(xMin: Double,
     private fun paintMarkup(g: Graphics){
 
         if (yMax <= 0)
-            paintXMarkups(0, g)
+            paintYMarkups(0, g)
         else if (yMin >= 0)
-            paintXMarkups(height,g)
+            paintYMarkups(height,g)
         else
-            paintXMarkups(converter.yCrtToScr(0.0),g)
+            paintYMarkups(converter.yCrtToScr(0.0),g)
 
         if(xMax <= 0)
-            paintYMarkups(width-1, g)
+            paintXMarkups(width-1, g)
         else if (xMin >= 0)
-            paintYMarkups(0, g)
+            paintXMarkups(0, g)
         else
-            paintYMarkups(converter.xCrtToScr(0.0), g)
+            paintXMarkups(converter.xCrtToScr(0.0), g)
     }
 
-    private fun paintXMarkups(y0: Int, g: Graphics)
+    private fun paintYMarkups(y0: Int, g: Graphics)
     {
         for( i in (xMin*10).toInt()..(xMax*10).toInt())
         {
             g.color = Color.BLUE
-            var div = 2;
+            var div = 2
             if ((i % 5)!=0) {
-                div += 1;
-                g.color=Color.RED
+                div += 2
             }
             if ((i % 10)!=0) {
-                div += 1;
+                div += 1
                 g.color=Color.BLACK
             }
             val x=converter.xCrtToScr(i/10.0)
             g.drawLine(x, y0 - div, x, y0 + div);
         }
     }
-    private fun paintYMarkups(x0: Int, g: Graphics)
+    private fun paintXMarkups(x0: Int, g: Graphics)
     {
         for (i in (yMin*10).toInt()..(yMax*10).toInt()){
             g.color= Color.BLUE
             var div = 2;
             if ((i % 5)!=0) {
-                div += 1;
-                g.color=Color.RED
+                div += 2
             }
             if ((i % 10)!=0) {
                 div += 1;
