@@ -1,5 +1,7 @@
-package graphics
+package gui.painters
 
+import graphics.Converter
+import graphics.Painter
 import math.polinomial.Newton
 import java.awt.Color
 import java.awt.Graphics
@@ -9,20 +11,20 @@ class PolinomialPainter(polinomial: Newton, converter: Converter): Painter {
 
     private val polynomial: Newton
 
-    public var colorPolinomial: Color = Color.BLACK
+    var colorPolinomial: Color = Color.BLACK
 
-    public var colorPoints: Color = Color.BLUE
+    var colorPoints: Color = Color.BLUE
 
-    public var colorDerivative: Color = Color.GREEN
-    public var isPolinomialVisible: Boolean = true
+    var colorDerivative: Color = Color.GREEN
+    var isPolinomialVisible: Boolean = true
         get() = field
         set(value) {field = value}
 
-    public var isPointsVisible: Boolean = true
+    var isPointsVisible: Boolean = true
         get() = field
         set(value) {field = value}
 
-    public var isDerivativeVisible: Boolean = true
+    var isDerivativeVisible: Boolean = true
         get() = field
         set(value) {field = value}
     override var height: Int = 1
@@ -91,9 +93,9 @@ class PolinomialPainter(polinomial: Newton, converter: Converter): Painter {
     override fun paint(g: Graphics?)
     {
         if (g != null){
+            paintPoint(g)
             if (polynomial.order > 0){
                 paintPolinomial(g)
-                paintPoint(g)
                 paintDerivative(g)
             }
         }

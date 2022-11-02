@@ -1,13 +1,12 @@
 package gui
 
-import graphics.CartesianPainter
 import graphics.Converter
 import graphics.GraphicsPanel
-import graphics.PolinomialPainter
+import gui.painters.CartesianPainter
+import gui.painters.PolinomialPainter
 import math.polinomial.Newton
 import java.awt.Button
 import java.awt.Color
-import java.awt.Component
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -17,30 +16,33 @@ import javax.swing.*
 import kotlin.math.abs
 
 class MainWindow : JFrame() {
-    val jsXMin: JSpinner
-    val jsXMax: JSpinner
-    val jsYMin: JSpinner
-    val jsYMax: JSpinner
-    val nmXMin: SpinnerNumberModel
-    val nmXMax: SpinnerNumberModel
-    val nmYMin: SpinnerNumberModel
-    val nmYMax: SpinnerNumberModel
-    val lblXMin: JLabel
-    val lblXMax: JLabel
-    val lblYMin: JLabel
-    val lblYMax: JLabel
-    val pnlColorPoly: JPanel
-    val pnlColorDerivative: JPanel
-    val pnlColorPoints: JPanel
-    val mainPanel: GraphicsPanel
-    val minSz = Dimension(600, 450)
-    val converter: Converter
-    val polyNewton: Newton
-    val polPainter: PolinomialPainter
-    val btnClear: Button
-    val cbShowPolynomial: JCheckBox
-    val cbShowDerivative: JCheckBox
-    val cbShowPoints: JCheckBox
+    private val jsXMin: JSpinner
+    private val jsXMax: JSpinner
+    private val jsYMin: JSpinner
+    private val jsYMax: JSpinner
+    private val nmXMin: SpinnerNumberModel
+    private val nmXMax: SpinnerNumberModel
+    private val nmYMin: SpinnerNumberModel
+    private val nmYMax: SpinnerNumberModel
+    private val lblXMin: JLabel
+    private val lblXMax: JLabel
+    private val lblYMin: JLabel
+    private val lblYMax: JLabel
+    private val lblColorPoly: JLabel
+    private val lblColorDeriv: JLabel
+    private val lblColorPoints: JLabel
+    private val pnlColorPoly: JPanel
+    private val pnlColorDerivative: JPanel
+    private val pnlColorPoints: JPanel
+    private val mainPanel: GraphicsPanel
+    private val minSz = Dimension(600, 450)
+    private val converter: Converter
+    private val polyNewton: Newton
+    private val polPainter: PolinomialPainter
+    private val btnClear: Button
+    private val cbShowPolynomial: JCheckBox
+    private val cbShowDerivative: JCheckBox
+    private val cbShowPoints: JCheckBox
 
     init{
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -65,6 +67,12 @@ class MainWindow : JFrame() {
         lblXMax.text = "Xmax: "
         lblYMax = JLabel()
         lblYMax.text = "Ymax: "
+        lblColorPoly = JLabel()
+        lblColorPoly.text = "Цвет полинома: "
+        lblColorDeriv = JLabel()
+        lblColorDeriv.text = "Цвет производной: "
+        lblColorPoints = JLabel()
+        lblColorPoints.text = "Цвет точек: "
         mainPanel = GraphicsPanel()
         mainPanel.background = Color.WHITE
         btnClear = Button("Очистить")
@@ -90,7 +98,7 @@ class MainWindow : JFrame() {
                         .addComponent(lblXMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsXMax, 70, SHRINK, SHRINK)
                         .addGap(16)
-                        .addComponent(pnlColorPoly, SHRINK, SHRINK, SHRINK)
+                        .addComponent(btnClear, SHRINK, SHRINK, SHRINK)
                     )
                     .addGroup(createSequentialGroup()
                         .addComponent(lblYMin, SHRINK, SHRINK, SHRINK)
@@ -98,11 +106,17 @@ class MainWindow : JFrame() {
                         .addGap(16)
                         .addComponent(lblYMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsYMax, 70, SHRINK, SHRINK)
-                        .addGap(16)
-                        .addComponent(pnlColorDerivative, SHRINK, SHRINK, SHRINK)
                     )
                     .addGroup(createSequentialGroup()
-                        .addComponent(pnlColorPoints, SHRINK, SHRINK, SHRINK)
+                        .addComponent(lblColorPoly, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorPoly, 20, 20, 20)
+                        .addGap(8)
+                        .addComponent(lblColorDeriv, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorDerivative, 20, 20, 20)
+                        .addGap(8)
+                        .addComponent(lblColorPoints, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorPoints, 20, 20, 20)
+                        .addGap(8)
                     )
                     .addGroup(createSequentialGroup()
                         .addComponent(cbShowPolynomial, SHRINK, SHRINK, SHRINK)
@@ -124,7 +138,7 @@ class MainWindow : JFrame() {
                         .addComponent(jsXMin, SHRINK, SHRINK, SHRINK)
                         .addComponent(lblXMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsXMax, SHRINK, SHRINK, SHRINK)
-                        .addComponent(pnlColorPoly , SHRINK, SHRINK, SHRINK)
+                        .addComponent(btnClear, SHRINK, SHRINK, SHRINK)
                 )
                 .addGroup(
                     createParallelGroup()
@@ -132,10 +146,15 @@ class MainWindow : JFrame() {
                         .addComponent(jsYMin, SHRINK, SHRINK, SHRINK)
                         .addComponent(lblYMax, SHRINK, SHRINK, SHRINK)
                         .addComponent(jsYMax, SHRINK, SHRINK, SHRINK)
-                        .addComponent(pnlColorDerivative, SHRINK, SHRINK, SHRINK)
                 )
-                .addGroup(createParallelGroup()
-                    .addComponent(pnlColorPoints, SHRINK, SHRINK, SHRINK)
+                .addGroup(
+                    createParallelGroup()
+                        .addComponent(lblColorPoly, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorPoly , 20, 20, 20)
+                        .addComponent(lblColorDeriv, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorDerivative, 20, 20, 20)
+                        .addComponent(lblColorPoints, SHRINK, SHRINK, SHRINK)
+                        .addComponent(pnlColorPoints, 20, 20, 20)
                 )
                 .addGroup(
                     createParallelGroup()
@@ -143,7 +162,6 @@ class MainWindow : JFrame() {
                         .addComponent(cbShowDerivative, SHRINK, SHRINK, SHRINK)
                         .addComponent(cbShowPoints, SHRINK, SHRINK, SHRINK)
                 )
-                .addComponent(pnlColorPoly, 20, 20, 20)
                 .addGap(8)
             )
         }
@@ -225,6 +243,7 @@ class MainWindow : JFrame() {
                 )?.let{
                     pnlColorPoly.background = it
                     polPainter.colorPolinomial = it
+                    mainPanel.repaint()
                 }
             }
         })
@@ -237,6 +256,7 @@ class MainWindow : JFrame() {
                 )?.let{
                     pnlColorDerivative.background = it
                     polPainter.colorDerivative = it
+                    mainPanel.repaint()
                 }
             }
         })
@@ -249,6 +269,7 @@ class MainWindow : JFrame() {
                 )?.let{
                     pnlColorPoints.background = it
                     polPainter.colorPoints = it
+                    mainPanel.repaint()
                 }
             }
         })
@@ -282,8 +303,9 @@ class MainWindow : JFrame() {
     {
         val conv_x = converter.xScrToCrt(x)
         val conv_y = converter.yScrToCrt(y)
+        val rad = converter.yScrToCrt(1) - converter.yScrToCrt(0)
         polyNewton.xList.forEach{ v ->
-            if (abs(v-conv_x) < 0.05)
+            if (abs(v-conv_x) < 5*abs(rad))
                 return
         }
         polyNewton.addNode(conv_x, conv_y)
@@ -292,10 +314,11 @@ class MainWindow : JFrame() {
     private fun deletePoint(x: Int, y: Int)
     {
         val conv_x = converter.xScrToCrt(x)
-        val conv_y = converter.yScrToCrt(y)
         for(i in 0 until polyNewton.xList.size)
         {
-            if (abs(polyNewton.xList[i]-conv_x) < 0.05)
+            val rad = converter.yScrToCrt(1) - converter.yScrToCrt(0)
+            // 0.05
+            if (abs(polyNewton.xList[i]-conv_x) < abs(rad))
             {
                 polyNewton.deleteNode(i)
                 break

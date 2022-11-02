@@ -65,6 +65,11 @@ class Newton (val coeffMap : MutableMap<Double, Double>) : Polynomial() {
     {
         nodeX.removeAt(i)
         nodeY.removeAt(i)
+        if (nodeX.size == 0)
+        {
+            _coeff.clear()
+            return
+        }
         val map = mutableMapOf<Double,Double>()
         nodeX.forEachIndexed{ j, v -> map.put(nodeX[j], nodeY[j]) }
         val res = Newton(map)
